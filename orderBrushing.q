@@ -1,18 +1,20 @@
+/ read data from csv
 rawData:("fiiz";enlist csv)0:`:order_brush_order.csv
 
-cols rawData
+/ change datetime to timespan format
+update event_time:`timespan$event_time from `rawData
 
-/ no filter, purely group by user and shop
-userIDCount: select orderCount:count userid, event_time by shopid,userid from rawData
+/ created bucketed raw data
+rawDataBucketed: update event_time: 0D01:00:00 xbar event_time from rawData
 
-/ suspectUserID: select from userIDCount where orderCount>2
-/ cols userIDCount
+/ Group by users and shops from bucketed data
+bucketedUserIDCount: select orderCount:count userid, event_time by shopid,userid from rawDataBucketed
 
-/ find repeated order by users in each shop
-select shopid, userid from userIDCount where orderCount > 2
+/ create table with data for overall task output
+taskOverallOuput:select userid by shopid from bucketedUserIDCount where orderCount > 2
 
-/ find repeated order by users in each shop, bucketed by 1 hr (60 mins)
-select shopid, userid by 60 xbar event_time from userIDCount where orderCount > 2
+interimOutput2: select shopid, userid from (update userid:"&"sv/: string userid from taskOverallOuput)
 
-/ select last price, sum size by 10 xbar time.minute from trade where sym=`IBM
-/ userIDCount: select count userid by shopid from rawData
+interimOutput1:select shopid, userid from (update userid:0 from rawData)
+
+outputTable: interimOutput1,interimOutput2
