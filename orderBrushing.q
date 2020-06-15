@@ -1,8 +1,5 @@
 / read data from csv
-rawData:("fiiz";enlist csv)0:`:order_brush_order.csv
-
-/ change datetime to timespan format
-update event_time:`timespan$event_time from `rawData
+rawData:("fiin";enlist csv)0:`:order_brush_order.csv
 
 / created bucketed raw data
 rawDataBucketed: update event_time: 0D01:00:00 xbar event_time from rawData
@@ -20,4 +17,4 @@ interimOutput1:select shopid, userid from (update userid:0 from rawData)
 interimOutput2: select shopid, userid from (update userid:"&"sv/: string userid from taskOverallOuput)
 
 / create output table by concatenating placeholder values with real values
-outputTable: interimOutput1,interimOutput2
+show outputTable: interimOutput1,interimOutput2
