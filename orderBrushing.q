@@ -16,5 +16,5 @@ interimOutput1:select shopid, userid from (update userid:0 from rawData)
 / table with suspect shops and userids
 interimOutput2: select shopid, userid from (update userid:"&"sv/: string userid from taskOverallOuput)
 
-/ create output table by concatenating placeholder values with real values
+/ create output table by joining placeholder table with table containing actual values
 show outputTable: interimOutput1,interimOutput2
